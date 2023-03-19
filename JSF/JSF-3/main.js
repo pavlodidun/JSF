@@ -59,14 +59,14 @@ function separateByType(arr) {
     let stringArr = [];
 
     for (let i = 0; i < arr.length; i++) {
-        if (Array.isArray(arrLm[i])) {
+        if (Array.isArray(arr[i])) {
             const subArrays = separateByType(arr[i]);
             numberArr = numberArr.concat(subArrays[0]);
             stringArr = stringArr.concat(subArrays[1]);
-        } else if (typeof arrLm[i] === 'number') {
-            numberArr.push(arrLm[i]);
-        } else if (typeof arrLm[i] === 'string') {
-            stringArr.push(arrLm[i]);
+        } else if (typeof arr[i] === 'number') {
+            numberArr.push(arr[i]);
+        } else if (typeof arr[i] === 'string') {
+            stringArr.push(arr[i]);
         }
     }
 
