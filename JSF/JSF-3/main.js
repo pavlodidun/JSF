@@ -5,8 +5,8 @@ function compact(arr) {
     return Array.from(new Set(arr));
 }
 
-const arrComp = [5, 3, 4, 5, 6, 7, 3];
-const arr2 = compact(arrComp);
+const arrC = [5, 3, 4, 5, 6, 7, 3];
+const arr2 = compact(arrC);
 console.log(arr2); // [5,3,4,6,7]
 
 // 2. Написати функцію createArray(start, end), яка приймає на вхід 2 параметри:
