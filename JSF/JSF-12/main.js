@@ -1,115 +1,73 @@
-// 11 - 1. Реалізуйте функцію getPromise(message, delay), яка приймає текстове повідомлення message і цілочисельне значення затримки delay(в мс)
-// і повертає Promise, який чекає задану кількість часу(використовуючи аргумент delay) і завершується повідомленням message.
+// 12-1. Створити Node.js http-сервер, який слухатиме запити на порт 5000 на локальній  машині. Сервер повинен повертати сторінку, 
+// що містить ім’я поточного користувача операційної системи, тип операційної системи, час роботи системи в хвилинах (використати модуль OS), 
+// поточну робочу директорію і назву файлу сервера (використати модуль path).
 
-// Результат: через 2 сек в консолі виводиться "test promise"
+const http = require('http');
+const os = require('os');
+const path = require('path');
 
-// getPromise("test promise", 2000).then(function (data) {
-//     console.log(data);
-// });
-
-function getPromise(message, delay) {
-    return new Promise(function (resolve, reject) {
-        setTimeout(function () {
-            resolve(message);
-        }, delay);
-    });
-}
-
-getPromise("test promise", 2000).then(function (data) {
-    console.log(data);
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.write('<h1>System information</h1>');
+    res.write(`<p>Current user name: ${os.userInfo().username}</p>`);
+    res.write(`<p>OS type: ${os.type()}</p>`);
+    res.write(`<p>System work time: ${Math.floor(os.uptime() / 60)} minutes</p>`);
+    res.write(`<p>Current work directory: ${process.cwd()}</p>`);
+    res.write(`<p>Server file name: ${path.basename(__filename)}</p>`);
+    res.end();
 });
 
-// 11-2. Реалізуйте функцію calcArrProduct(arr), яка приймає масив чисел. Функція повинна повернути Promise, 
-// робота якого завершується поверненням добутку елементів масиву, якщо вони є типу Numbers, або повідомленням "Error! Incorrect array!" 
-// у випадку, якщо хоча б 1 елемент масиву нечисловий.
+server.listen(5000, () => {
+    console.log('Server running at http://localhost:5000/');
+});
 
-// calcArrProduct([3, 4, 5]).then(result => console.log(result)); // 60
-// calcArrProduct([5, "user2", 7, 12]).then(result => console.log(result));
-// "Error! Incorrect array!"
 
-function calcArrProduct(arr) {
-    return new Promise(function (resolve, reject) {
-        let product = 1;
-        for (let i = 0; i < arr.length; i++) {
-            if (typeof arr[i] !== "number") {
-                reject("Error! Incorrect array!");
-            }
-            product *= arr[i];
-        }
-        resolve(product);
-    });
+// 12-2. Необхідно створити власний модуль рег. js, який містить функцію, що приймає імʼя системного юзера і
+// працює з поточним часом та на основі пори доби виводить повідомлення із привітанням юзера. Щоб експортувати змінні
+// чи функції модуля на зовні можна використати обʼєкт module.exports.
+// Створіть Node.js сервер, який з використанням функціоналу розробленого модуля повертатиме наступну сторінку:
+
+function greeting(name) {
+    const date = new Date();
+    const hour = date.getHours();
+    let timeOfDay = '';
+
+    if (hour >= 6 && hour < 12) {
+        timeOfDay = 'morning';
+    } else if (hour >= 12 && hour < 18) {
+        timeOfDay = 'afternoon';
+    } else {
+        timeOfDay = 'evening';
+    }
+
+    return `Good ${timeOfDay}, ${name}!`;
 }
 
-calcArrProduct([3, 4, 5]).then(result => console.log(result)); // 60
-calcArrProduct([5, "user2", 7, 12]).then(result => console.log(result)); // "Error! Incorrect array!"
-
-// 11-3. Створіть наступний асинхронний ланцюжок promise:
-
-// new Promise(function (resolve, reject) {
-//     // Запитуємо у користувача number за допомогою prompt()
-//     // Якщо користувач ввів не число - викликаємо reject()
-//     // Якщо користувач ввів число- викликаємо resolve(number)
-// }).catch(function (error) {
-//     return new Promise(function (resolve, reject) {
-//         // Запитуємо у користувача number, до тих пір, поки він його не введе
-//         // Після вводу числа - викликаємо resolve(number)
-//     });
-// }).then(function (result) {
-//     // Вивід number у консоль
-// });
-
-new Promise(function (resolve, reject) {
-    let number = parseInt(prompt("Enter a number:"));
-    if (isNaN(number)) {
-        reject("Error! Input is not a number.");
-    } else {
-        resolve(number);
-    }
-})
-    .catch(function (error) {
-        console.log(error);
-        return new Promise(function (resolve, reject) {
-            let number;
-            do {
-                number = parseInt(prompt("Please enter a number:"));
-            } while (isNaN(number));
-            resolve(number);
-        });
-    })
-    .then(function (result) {
-        console.log("The number is: " + result);
-    });
-
-// 11-4. Заданий цикл for, який виводить послідовність чисел від 0 до 10 з випадковим інтервалом (від 0 до N мілісекунд). 
-// Використовуючи проміси потрібно змінити цикл так, щоб числа виводилися в строгій послідовності від 0 до 10. Наприклад, 
-// якщо виведення нуля займає 4 секунди, а одиниці 2 секунди, то одиниця повинна дочекатися виведення  нуля 
-// і тільки потім почати свій відлік (щоб дотримуватися послідовності).
-// Для розв’язку задачі необзідно застосувати задану функцію delay(i, time), яка повертає проміс, 
-// який резолвиться поточним значенням числа-лічильника циклу і, яке виводиться через час time мілісекунд.
-
-// Результат: з різним рендомним інтервалом (наприклад від 0 до 3 сек) в консоль послідовно  виводяться числа 0,1,2,3,4,5,6,7,8,9 
-// Задачу потрібно реалізувати без застосування промісів. Переписати функцію showNumbers, використовуючи конструкцію async/await.
-
-// const delay = (i, time) => new Promise(resolve => setTimeout(() => resolve(i), time));
-// function showNumbers() {
-//     // your code with using delay(i, time)
-// }
-// showNumbers();
-
-const delay = async (i, time) => {
-    await new Promise(resolve => setTimeout(resolve, time));
-    return i;
+module.exports = {
+    greeting
 };
 
-async function showNumbers() {
-    let delayTime = 0;
-    for (let i = 0; i <= 10; i++) {
-        const result = await delay(i, Math.random() * 3000);
-        if (result === delayTime + 1) {
-            console.log(result);
-            delayTime++;
-        }
-    }
-}
+const http = require('http');
+const greetingModule = require('./greeting');
 
-showNumbers();
+const server = http.createServer((req, res) => {
+    if (req.url === '/') {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+
+        const greeting = greetingModule.greeting('oivaniu');
+        const date = new Date();
+        const formattedDate = date.toString();
+
+        res.write(`<p>Date of request: ${formattedDate}</p>`);
+        res.write(`<p>${greeting}</p>`);
+        res.end();
+    } else {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write('<h1>404 Not Found</h1>');
+        res.end();
+    }
+});
+
+server.listen(8000, () => {
+    console.log('Server running at http://localhost:8000/');
+});
